@@ -15,8 +15,6 @@ This repository includes all infrastructure roles and playbooks for deploying an
 - Node Exporter
 - Flask App
 - User Management
-- UFW Firewall
-- Fail2Ban
 
 ## ▶ Usage
 
