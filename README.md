@@ -23,7 +23,3 @@ This repository includes all infrastructure roles and playbooks for deploying an
 ```bash
 ansible-playbook -i inventory.ini site.yml
 ```
-
-# ansible-roles-for-infra
-# ansible-roles-for-infra
-# ansible-roles-for-infra
