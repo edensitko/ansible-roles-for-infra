@@ -1,0 +1,8 @@
+---
+- name: Run role: install_mysql
+  hosts: all
+  become: yes
+  vars_files:
+    - ../vars.yml
+  roles:
+    - install_mysql

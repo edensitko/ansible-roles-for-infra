@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: Eden Sitkovetsky
+  description: Role to install and configure Prometheus
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: RedHat
+      versions:
+        - all
+dependencies: []

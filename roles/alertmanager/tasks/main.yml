@@ -1,0 +1,84 @@
+---
+- name: Create alertmanager user
+  user:
+    name: alertmanager
+    shell: /sbin/nologin
+
+- name: Create alertmanager directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: alertmanager
+    group: alertmanager
+    mode: '0755'
+  loop:
+    - /etc/alertmanager
+    - /var/lib/alertmanager
+
+- name: Download Alertmanager
+  get_url:
+    url: "https://github.com/prometheus/alertmanager/releases/download/v0.27.0/alertmanager-0.27.0.linux-amd64.tar.gz"
+    dest: /tmp/alertmanager.tar.gz
+
+- name: Extract Alertmanager
+  unarchive:
+    src: /tmp/alertmanager.tar.gz
+    dest: /tmp/
+    remote_src: yes
+
+- name: Copy Alertmanager binaries
+  copy:
+    remote_src: yes
+    src: "/tmp/alertmanager-0.27.0.linux-amd64/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: '0755'
+  loop:
+    - alertmanager
+    - amtool
+
+- name: Set ownership on alertmanager binary
+  file:
+    path: /usr/local/bin/alertmanager
+    owner: alertmanager
+    group: alertmanager
+
+- name: Set ownership on alertmanager config
+  file:
+    path: /etc/alertmanager
+    owner: alertmanager
+    group: alertmanager
+    recurse: yes
+
+- name: Deploy minimal Alertmanager config
+  copy:
+    dest: /etc/alertmanager/alertmanager.yml
+    content: |
+      route:
+        group_by: ['alertname']
+        receiver: 'null'
+      receivers:
+        - name: 'null'
+  notify: restart alertmanager
+
+- name: Create systemd service with storage path
+  copy:
+    dest: /etc/systemd/system/alertmanager.service
+    content: |
+      [Unit]
+      Description=Alertmanager
+      After=network-online.target
+
+      [Service]
+      User=alertmanager
+      Group=alertmanager
+      Type=simple
+      ExecStart=/usr/local/bin/alertmanager --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/var/lib/alertmanager --web.listen-address=:9093
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Reload systemd and start Alertmanager
+  systemd:
+    daemon_reload: yes
+    name: alertmanager
+    enabled: yes
+    state: restarted

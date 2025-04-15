@@ -1,0 +1,36 @@
+---
+- name: Install Grafana APT repo and package (Debian)
+  shell: |
+    apt-get install -y software-properties-common gnupg2 curl
+    curl https://packages.grafana.com/gpg.key | gpg --dearmor > /usr/share/keyrings/grafana.gpg
+    echo "deb [signed-by=/usr/share/keyrings/grafana.gpg] https://packages.grafana.com/oss/deb stable main" > /etc/apt/sources.list.d/grafana.list
+    apt-get update && apt-get install -y grafana
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Install Grafana on RedHat
+  shell: |
+    cat <<EOF | tee /etc/yum.repos.d/grafana.repo
+    [grafana]
+    name=Grafana OSS
+    baseurl=https://packages.grafana.com/oss/rpm
+    repo_gpgcheck=1
+    enabled=1
+    gpgcheck=1
+    gpgkey=https://packages.grafana.com/gpg.key
+    sslverify=1
+    EOF
+    yum install -y grafana
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Replace Grafana default port in config
+  lineinfile:
+    path: /etc/grafana/grafana.ini
+    regexp: '^;http_port ='
+    line: "http_port = {{ grafana_port }}"
+    insertafter: '^\[server\]'
+
+- name: Start and enable Grafana service
+  service:
+    name: grafana-server
+    state: restarted
+    enabled: yes

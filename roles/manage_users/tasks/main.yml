@@ -1,0 +1,14 @@
+---
+- name: Add new users
+  user:
+    name: "{{ item.name }}"
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    state: present
+  loop: "{{ users_to_add }}"
+
+- name: Remove unwanted users
+  user:
+    name: "{{ item }}"
+    state: absent
+    remove: yes
+  loop: "{{ users_to_remove }}"

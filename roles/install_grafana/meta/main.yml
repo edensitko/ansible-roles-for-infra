@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  author: Eden Sitkovetsky
+  description: Role to install and configure Grafana from the official repository.
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Debian
+      versions: [all]
+    - name: RedHat
+      versions: [all]
+dependencies: []

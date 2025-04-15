@@ -1,0 +1,8 @@
+---
+- name: Run role: manage_users
+  hosts: all
+  become: yes
+  vars_files:
+    - ../vars.yml
+  roles:
+    - manage_users

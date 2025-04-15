@@ -1,0 +1,36 @@
+---
+# התקנת Docker (לפני הקמת קונטיינר Jenkins)
+- name: Ensure Docker is installed on Debian/Ubuntu
+  apt:
+    name: docker.io
+    state: present
+    update_cache: yes
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Ensure Docker is installed on RedHat/CentOS
+  yum:
+    name: docker
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Ensure Docker service is started and enabled
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+# כעת נמשיך עם יצירת קונטיינר Jenkins
+- name: Create Jenkins Docker volume
+  docker_volume:
+    name: jenkins_data
+
+- name: Run Jenkins in Docker on dynamic port
+  docker_container:
+    name: jenkins
+    image: jenkins/jenkins:lts
+    state: started
+    restart_policy: always
+    published_ports:
+      - "{{ jenkins_port }}:8080"
+    volumes:
+      - jenkins_data:/var/jenkins_home

@@ -1,0 +1,17 @@
+---
+- name: Run all infrastructure roles
+  hosts: all
+  become: yes
+  vars_files:
+    - vars.yml
+  roles:
+    - manage_users
+    - deploy_flask
+    - install_prometheus
+    - install_node_exporter
+    - install_grafana
+    - install_jenkins
+    - install_apache
+    - alertmanager
+    - install_mysql
+    - install_nginx

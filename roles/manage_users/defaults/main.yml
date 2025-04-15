@@ -1,0 +1,7 @@
+---
+users_to_add:
+  - name: eden
+    shell: /bin/bash
+
+users_to_remove:
+  - oldadmin
